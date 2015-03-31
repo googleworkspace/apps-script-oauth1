@@ -342,9 +342,8 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     'Consumer Key': this.consumerKey_,
     'Consumer Secret': this.consumerSecret_
   });
-  params = params || {
-    method: 'get'
-  };
+  params = params || {};
+  params.method = params.method || 'get';
   var token = opt_token || null;
   var oauthParams = opt_oauthParams || null;
   var signer = new Signer({
