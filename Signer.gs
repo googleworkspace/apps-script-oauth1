@@ -22,9 +22,8 @@
 /**
  * A modified version of the oauth-1.0a javascript library:
  * https://github.com/ddo/oauth-1.0a
- * The cryptojs dependency was removed in favor of native Apps Script functions,
- * and the OAuth class was exposed as "Signer", to distinguish it from other
- * related claseses.
+ * The cryptojs dependency was removed in favor of native Apps Script functions.
+ * A new parameter was added to authorize() for additional oauth params.
  */
 
 (function(global) {
@@ -87,7 +86,7 @@
   * @param  {Object} public and secret token
   * @return {Object} OAuth Authorized data
   */
-  OAuth.prototype.authorize = function(request, token) {
+  OAuth.prototype.authorize = function(request, token, opt_oauth_data) {
     var oauth_data = {
       oauth_consumer_key: this.consumer.public,
       oauth_nonce: this.getNonce(),
@@ -95,6 +94,10 @@
       oauth_timestamp: this.getTimeStamp(),
       oauth_version: this.version
     };
+
+    if (opt_oauth_data) {
+      oauth_data = this.mergeObject(oauth_data, opt_oauth_data);
+    }
 
     if(!token) {
       token = {};

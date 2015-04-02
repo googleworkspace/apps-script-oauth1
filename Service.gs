@@ -352,12 +352,20 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
       secret: this.consumerSecret_
     }
   });
+  var payload = _.extend({}, params.payload, oauthParams);
   var request = {
     url: url,
-    method: params.method,
-    data: oauthParams
+    method: params.method
   };
-  oauthParams = signer.authorize(request, token);
+  if (params.payload && (!params.contentType ||
+      params.contentType == 'application/x-www-form-urlencoded')) {
+    var data = params.payload;
+    if (typeof(data) == 'string') {
+      data = signer.deParam(data);
+    }
+    request.data = data;
+  }
+  oauthParams = signer.authorize(request, token, oauthParams);
   switch (this.paramLocation_) {
     case 'auth-header':
       params.headers = _.extend({}, params.headers,
