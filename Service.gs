@@ -28,6 +28,7 @@ var Service_ = function(serviceName) {
   this.serviceName_ = serviceName;
   this.paramLocation_ = 'auth-header';
   this.method_ = 'get';
+  this.oauthVersion_ = '1.0a';
 };
 
 /**
@@ -90,6 +91,17 @@ Service_.prototype.setParamLocation = function(location) {
  */
 Service_.prototype.setMethod = function(method) {
   this.method_ = method;
+  return this;
+};
+
+/**
+ * Sets the specific OAuth version to use. The default is '1.0a'.
+ * @param {string} oauthVersion The OAuth version. Allowed values are '1.0a'
+ *     and '1.0'.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setOAuthVersion = function(oauthVersion) {
+  this.oauthVersion_ = oauthVersion;
   return this;
 };
 
@@ -188,9 +200,13 @@ Service_.prototype.authorize = function() {
   var token = this.getRequestToken_();
   this.saveToken_(token);
 
-  return buildUrl_(this.authorizationUrl_, {
+  var oauthParams = {
     oauth_token: token.public
-  });
+  };
+  if (this.oauthVersion_ == '1.0') {
+    oauthParams['oauth_callback'] = this.getCallbackUrl_();
+  }
+  return buildUrl_(this.authorizationUrl_, oauthParams);
 };
 
 /**
@@ -201,8 +217,15 @@ Service_.prototype.authorize = function() {
  * @return {boolean} True if authorization was granted, false if it was denied.
  */
 Service_.prototype.handleCallback = function(callbackRequest) {
+  var requestToken = callbackRequest.parameter.oauth_token;
   var verifier = callbackRequest.parameter.oauth_verifier;
-  if (!verifier) {
+  var token = this.getToken_();
+
+  if (requestToken && requestToken != token.public) {
+    throw 'Error handling callback: token mismatch'
+  }
+
+  if (this.oauthVersion_ == '1.0a' && !verifier) {
     return false;
   }
 
@@ -260,26 +283,16 @@ Service_.prototype.getRequestToken_ = function() {
   validate_({
     'Request Token URL': this.requestTokenUrl_,
     'Method': this.method_,
-    'Callback Function Name': this.callbackFunctionName_,
-    'Service Name': this.serviceName_,
-    'Project Key': this.projectKey_
   });
   var url = this.requestTokenUrl_;
   var params = {
     method: this.method_,
     muteHttpExceptions: true
   };
-  var stateToken = ScriptApp.newStateToken()
-      .withMethod(this.callbackFunctionName_)
-      .withArgument('serviceName', this.serviceName_)
-      .withTimeout(3600)
-      .createToken();
-  var callbackUrl = buildUrl_(getCallbackUrl(this.projectKey_), {
-    state: stateToken
-  });
-  var oauthParams = {
-    oauth_callback: callbackUrl
-  };
+  var oauthParams = {};
+  if (this.oauthVersion_ == '1.0a') {
+    oauthParams['oauth_callback'] = this.getCallbackUrl_();
+  }
 
   var response = this.fetchInternal_(url, params, null, oauthParams);
   if (response.getResponseCode() != 200) {
@@ -293,13 +306,12 @@ Service_.prototype.getRequestToken_ = function() {
 
 /**
  * Get a new access token.
- * @param {string} verifier The value of the `oauth_verifier` URL parameter in
- *     the callback.
+ * @param {string} opt_verifier The value of the `oauth_verifier` URL parameter
+ *     in the callback. Not used by OAuth version '1.0'.
  * @returns {Object} An access token.
  */
-Service_.prototype.getAccessToken_ = function(verifier) {
+Service_.prototype.getAccessToken_ = function(opt_verifier) {
   validate_({
-    'OAuth Verifier': verifier,
     'Access Token URL': this.accessTokenUrl_,
     'Method': this.method_
   });
@@ -309,9 +321,11 @@ Service_.prototype.getAccessToken_ = function(verifier) {
     muteHttpExceptions: true
   };
   var token = this.getToken_();
-  var oauthParams = {
-    oauth_verifier: verifier
-  };
+
+  var oauthParams = {};
+  if (opt_verifier) {
+    oauthParams['oauth_verifier'] = opt_verifier;
+  }
 
   var response = this.fetchInternal_(url, params, token, oauthParams);
   if (response.getResponseCode() != 200) {
@@ -452,4 +466,25 @@ Service_.prototype.getToken_ = function() {
  */
 Service_.prototype.getPropertyKey_ = function() {
   return 'oauth1.' + this.serviceName_;
+};
+
+/**
+ * Gets a callback URL to use for the OAuth flow.
+ * @return {string} A callback URL.
+ * @private
+ */
+Service_.prototype.getCallbackUrl_ = function() {
+  validate_({
+    'Callback Function Name': this.callbackFunctionName_,
+    'Service Name': this.serviceName_,
+    'Project Key': this.projectKey_
+  });
+  var stateToken = ScriptApp.newStateToken()
+      .withMethod(this.callbackFunctionName_)
+      .withArgument('serviceName', this.serviceName_)
+      .withTimeout(3600)
+      .createToken();
+  return buildUrl_(getCallbackUrl(this.projectKey_), {
+    state: stateToken
+  });
 };
