@@ -394,6 +394,18 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     default:
       throw 'Unknown param location: ' + this.paramLocation_;
   }
+
+  var formDataString = function(obj) {
+    var formData = [];
+    var e = signer.percentEncode;
+    for (var key in obj) {
+      formData.push(e(key) + '=' + e(obj[key]));
+    }
+    return formData.join('&');
+  }
+  
+  params.payload = formDataString(params.payload);
+
   return UrlFetchApp.fetch(url, params);
 };
 
