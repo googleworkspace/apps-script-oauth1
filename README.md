@@ -26,7 +26,7 @@ code editor:
 
 ## Callback URL
 
-Before you can start authenticating against an OAuth2 provider, you usually need
+Before you can start authenticating against an OAuth1 provider, you usually need
 to register your application and retrieve the consumer key and secret. Often
 these registration screens require you to enter a "Callback URL", which is the
 URL that users will be redirected to after they've authorized the token. For
