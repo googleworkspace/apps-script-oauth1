@@ -29,6 +29,7 @@ var Service_ = function(serviceName) {
   this.paramLocation_ = 'auth-header';
   this.method_ = 'get';
   this.oauthVersion_ = '1.0a';
+  this.projectKey_ = ScriptApp.getProjectKey();
 };
 
 /**
@@ -112,6 +113,7 @@ Service_.prototype.setOAuthVersion = function(oauthVersion) {
  * @param {string} projectKey The project key of the project containing the
  *     callback function.
  * @return {Service_} This service, for chaining.
+ * @deprecated The project key is now be determined automatically.
  */
 Service_.prototype.setProjectKey = function(projectKey) {
   this.projectKey_ = projectKey;
