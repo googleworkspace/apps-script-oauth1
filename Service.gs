@@ -30,6 +30,7 @@ var Service_ = function(serviceName) {
   this.method_ = 'get';
   this.oauthVersion_ = '1.0a';
   this.projectKey_ = eval('Script' + 'App').getProjectKey();
+  this.signatureMethod_ = 'HMAC-SHA1';
 };
 
 /**
@@ -92,6 +93,17 @@ Service_.prototype.setParamLocation = function(location) {
  */
 Service_.prototype.setMethod = function(method) {
   this.method_ = method;
+  return this;
+};
+
+/**
+ * Sets the OAuth signature method to use. 'HMAC-SHA1' is the default.
+ * @param {string} signatureMethod The OAuth signature method. Allowed values 
+ *     are 'HMAC-SHA1' and 'PLAINTEXT'.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setSignatureMethod = function(signatureMethod) {
+  this.signatureMethod_ = signatureMethod;
   return this;
 };
 
@@ -363,6 +375,7 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
   var token = opt_token || null;
   var oauthParams = opt_oauthParams || null;
   var signer = new Signer({
+    signature_method: this.signatureMethod_,
     consumer: {
       public: this.consumerKey_,
       secret: this.consumerSecret_
