@@ -22,7 +22,7 @@ function run() {
     Logger.log('Open the following URL and re-run the script: %s',
         authorizationUrl);
   }
-}
+} 
 
 /**
  * Reset the authorization state, so that it can be re-tested.
@@ -55,7 +55,7 @@ function getService() {
 }
 
 /**
- * Handles the OAuth2 callback.
+ * Handles the OAuth callback.
  */
 function authCallback(request) {
   var service = getService();

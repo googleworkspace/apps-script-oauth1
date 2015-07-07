@@ -52,7 +52,7 @@ function getService() {
 }
 
 /**
- * Handles the OAuth2 callback.
+ * Handles the OAuth callback.
  */
 function authCallback(request) {
   var service = getService();
