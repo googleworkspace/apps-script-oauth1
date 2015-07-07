@@ -29,7 +29,7 @@ var Service_ = function(serviceName) {
   this.paramLocation_ = 'auth-header';
   this.method_ = 'get';
   this.oauthVersion_ = '1.0a';
-  this.projectKey_ = ScriptApp.getProjectKey();
+  this.projectKey_ = eval('Script' + 'App').getProjectKey();
 };
 
 /**
@@ -492,7 +492,7 @@ Service_.prototype.getCallbackUrl_ = function() {
     'Service Name': this.serviceName_,
     'Project Key': this.projectKey_
   });
-  var stateToken = ScriptApp.newStateToken()
+  var stateToken = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
       .withTimeout(3600)
