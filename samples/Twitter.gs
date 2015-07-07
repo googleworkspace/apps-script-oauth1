@@ -25,15 +25,6 @@ function run() {
 }
 
 /**
- * Encodes a string using the RFC 3986 spec.
- */
-function encodeRfc3986(str) {
-  return encodeURIComponent(str).replace(/[!'()]/g, function(char) {
-    return escape(char);
-  }).replace(/\*/g, "%2A");
-}
-
-/**
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
