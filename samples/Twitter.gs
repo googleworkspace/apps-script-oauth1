@@ -11,13 +11,9 @@ function run() {
     var payload = {
       status: 'It\'s a tweet!'
     };
-    payload = Object.keys(payload).map(function(key) {
-      return encodeRfc3986(key) + '=' + encodeRfc3986(payload[key]);
-    }).join('&');
     var response = service.fetch(url, {
       method: 'post',
-      payload: payload,
-      escaping: false
+      payload: payload
     });
     var result = JSON.parse(response.getContentText());
     Logger.log(JSON.stringify(result, null, 2));

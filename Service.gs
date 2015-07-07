@@ -396,6 +396,17 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     default:
       throw 'Unknown param location: ' + this.paramLocation_;
   }
+  if (params.payload && (!params.contentType ||
+      params.contentType == 'application/x-www-form-urlencoded')) {
+    // Disable UrlFetchApp escaping and use the signer's escaping instead.
+    // This will ensure that the escaping is consistent between the signature and the request.
+    var payload = request.data;
+    payload = Object.keys(payload).map(function(key) {
+      return signer.percentEncode(key) + '=' + signer.percentEncode(payload[key]);
+    }).join('&');
+    params.payload = payload;
+    params.escaping = false;
+  }
   return UrlFetchApp.fetch(url, params);
 };
 

@@ -30,7 +30,7 @@ function reset() {
  * Configures the service.
  */
 function getService() {
-  return OAuth1.createService('Twitter')
+  return OAuth1.createService('TripIt')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://api.tripit.com/oauth/request_token')
       .setAuthorizationUrl('https://www.tripit.com/oauth/authorize')
