@@ -196,8 +196,11 @@
     var data = {};
 
     for(var i = 0; i < arr.length; i++) {
-      var item = arr[i].split('=');
-      data[item[0]] = item[1];
+      var parts = arr[i].split('=');
+      var key = parts[0];
+      var value = parts.slice(1).join('=');
+
+      data[key] = value;
     }
     return data;
   };
