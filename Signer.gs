@@ -186,24 +186,21 @@
     return url.split('?')[0];
   };
 
-  /**
-  * Get data from String
-  * @param  {String} string
-  * @return {Object}
-  */
-  OAuth.prototype.deParam = function(string) {
-    var arr = decodeURIComponent(string).split('&');
+ /**
+ * Get data from String
+ * @param  {String} string
+ * @return {Object}
+ */
+OAuth.prototype.deParam = function(string) {
+    var arr = string.split('&');
     var data = {};
 
     for(var i = 0; i < arr.length; i++) {
-      var parts = arr[i].split('=');
-      var key = parts[0];
-      var value = parts.slice(1).join('=');
-
-      data[key] = value;
+        var item = arr[i].split('=');
+        data[item[0]] = decodeURIComponent(item[1]);
     }
     return data;
-  };
+};
 
   /**
   * Get data from url
