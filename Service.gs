@@ -31,6 +31,7 @@ var Service_ = function(serviceName) {
   this.oauthVersion_ = '1.0a';
   this.projectKey_ = eval('Script' + 'App').getProjectKey();
   this.signatureMethod_ = 'HMAC-SHA1';
+  this.propertyStore_ = new MemoryProperties();
 };
 
 /**
@@ -98,7 +99,7 @@ Service_.prototype.setMethod = function(method) {
 
 /**
  * Sets the OAuth signature method to use. 'HMAC-SHA1' is the default.
- * @param {string} signatureMethod The OAuth signature method. Allowed values 
+ * @param {string} signatureMethod The OAuth signature method. Allowed values
  *     are 'HMAC-SHA1' and 'PLAINTEXT'.
  * @return {Service_} This service, for chaining.
  */
@@ -171,10 +172,10 @@ Service_.prototype.setConsumerSecret = function(consumerSecret) {
 };
 
 /**
- * Sets the property store to use when persisting credentials (required). In
+ * Sets the property store to use when persisting credentials (optional). In
  * most cases this should be user properties, but document or script properties
- * may be appropriate if you want
- * to share access across users.
+ * may be appropriate if you want to share access across users. If not set tokens
+ * will be stored in memory only.
  * @param {PropertiesService.Properties} propertyStore The property store to use
  *     when persisting credentials.
  * @return {Service_} This service, for chaining.
@@ -195,6 +196,22 @@ Service_.prototype.setPropertyStore = function(propertyStore) {
  */
 Service_.prototype.setCache = function(cache) {
   this.cache_ = cache;
+  return this;
+};
+
+/**
+ * Sets the access token and token secret to use (optional). For use with APIs
+ * that support a 1-legged flow where no user interaction is required.
+ * @param {string} token The access token.
+ * @param {string} secret The token secret.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setAccessToken = function(token, secret) {
+  this.saveToken_({
+    public: token,
+    secret: secret,
+    type: 'access'
+  });
   return this;
 };
 
@@ -381,7 +398,6 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
       secret: this.consumerSecret_
     }
   });
-  var payload = _.extend({}, params.payload, oauthParams);
   var request = {
     url: url,
     method: params.method
