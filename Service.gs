@@ -326,7 +326,7 @@ Service_.prototype.getRequestToken_ = function() {
   }
 
   var response = this.fetchInternal_(url, params, null, oauthParams);
-  if (response.getResponseCode() != 200) {
+  if (response.getResponseCode() >= 400) {
     throw 'Error starting OAuth flow: ' + response.getContentText();
   }
 
@@ -359,7 +359,7 @@ Service_.prototype.getAccessToken_ = function(opt_verifier) {
   }
 
   var response = this.fetchInternal_(url, params, token, oauthParams);
-  if (response.getResponseCode() != 200) {
+  if (response.getResponseCode() >= 400) {
     throw 'Error completing OAuth flow: ' + response.getContentText();
   }
 
