@@ -17,8 +17,8 @@
  * required setup.
  */
 
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+// Load the Underscore.js library. This library was added using the script ID
+// "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
 var _ = Underscore.load();
 
 /**
@@ -35,13 +35,13 @@ function createService(serviceName) {
 /**
  * Returns the callback URL that will be used for a given script. Often this URL
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} projectKey The project key of your script, which can be found
- *     in the Script Editor UI under "File > Project properties".
+ * @param {string} scriptId The ID of your script, which can be found in the
+ *     Script Editor UI under "File > Project properties".
  * @return {string} The callback URL.
  */
-function getCallbackUrl(projectKey) {
+function getCallbackUrl(scriptId) {
   return Utilities.formatString(
-    'https://script.google.com/macros/d/%s/usercallback', projectKey);
+    'https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
 if (module) {

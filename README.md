@@ -17,11 +17,15 @@ in your project. To add it to your script, do the following in the Apps Script
 code editor:
 
 1. Click on the menu item "Resources > Libraries..."
-2. In the "Find a Library" text box, enter the project key
-   "Mb2Vpd5nfD3Pz-_a-39Q4VfxhMjh3Sh48" and click the "Select" button.
+2. In the "Find a Library" text box, enter the script ID
+   `1CXDCY5sqT9ph64fFwSzVtXnbjpSfWdRymafDrtIZ7Z_hwysTY7IIhi7s` and click the
+   "Select" button.
 3. Choose a version in the dropdown box (usually best to pick the latest
    version).
 4. Click the "Save" button.
+
+Alternatively, you can copy and paste the files in the [`/dist`](dist) directory
+directly into your script project.
 
 
 ## Callback URL
@@ -33,11 +37,23 @@ URL that users will be redirected to after they've authorized the token. For
 this library (and the Apps Script functionality in general) the URL will always
 be in the following format:
 
-    https://script.google.com/macros/d/{PROJECT KEY}/usercallback
+    https://script.google.com/macros/d/{SCRIPT ID}/usercallback
 
-Where `{PROJECT KEY}` is the key of the script that is using this library. You
-can find your script's project key in the Apps Script code editor by clicking on
-the menu item "File > Project properties".
+Where `{SCRIPT ID}` is the ID of the script that is using this library. You
+can find your script's ID in the Apps Script code editor by clicking on the menu
+item "File > Project properties".
+
+Alternatively you can call the service's `getCallbackUrl()` method to view the
+exact URL that the service will use when performing the OAuth flow:
+
+      /**
+       * Logs the callback URL to register.
+       */
+      function logCallbackUrl() {
+        var service = getService();
+        Logger.log(service.getCallbackUrl());
+      }
+
 
 
 ## Usage

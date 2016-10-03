@@ -84,8 +84,8 @@ MemoryProperties.prototype.setProperty = function(key, value) {
  * required setup.
  */
 
-// Load the Underscore.js library. This library was added using the project
-// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+// Load the Underscore.js library. This library was added using the script ID
+// "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
 
 
 /**
@@ -102,13 +102,13 @@ function createService(serviceName) {
 /**
  * Returns the callback URL that will be used for a given script. Often this URL
  * needs to be entered into a configuration screen of your OAuth provider.
- * @param {string} projectKey The project key of your script, which can be found
- *     in the Script Editor UI under "File > Project properties".
+ * @param {string} scriptId The ID of your script, which can be found in the
+ *     Script Editor UI under "File > Project properties".
  * @return {string} The callback URL.
  */
-function getCallbackUrl(projectKey) {
+function getCallbackUrl(scriptId) {
   return Utilities.formatString(
-    'https://script.google.com/macros/d/%s/usercallback', projectKey);
+    'https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
 if (module) {
@@ -153,7 +153,7 @@ var Service_ = function(serviceName) {
   this.paramLocation_ = 'auth-header';
   this.method_ = 'get';
   this.oauthVersion_ = '1.0a';
-  this.projectKey_ = eval('Script' + 'App').getProjectKey();
+  this.scriptId_ = eval('Script' + 'App').getScriptId();
   this.signatureMethod_ = 'HMAC-SHA1';
   this.propertyStore_ = new MemoryProperties();
 };
@@ -244,16 +244,16 @@ Service_.prototype.setOAuthVersion = function(oauthVersion) {
 };
 
 /**
- * Sets the project key of the script that contains the authorization callback
- * function (required). The project key can be found in the Script Editor UI
+ * Sets the ID of the script that contains the authorization callback
+ * function (required). The script ID can be found in the Script Editor UI
  * under "File > Project properties".
- * @param {string} projectKey The project key of the project containing the
- *     callback function.
+ * @param {string} scriptId The ID of the script containing the callback
+ *     function.
  * @return {Service_} This service, for chaining.
- * @deprecated The project key is now be determined automatically.
+ * @deprecated The script ID is now be determined automatically.
  */
-Service_.prototype.setProjectKey = function(projectKey) {
-  this.projectKey_ = projectKey;
+Service_.prototype.setScriptId = function(scriptId) {
+  this.scriptId_ = scriptId;
   return this;
 };
 
@@ -343,7 +343,7 @@ Service_.prototype.setAccessToken = function(token, secret) {
  * Starts the authorization process. A new token will be generated and the
  * authorization URL for that token will be returned. Have the user visit this
  * URL and approve the authorization request. The user will then be redirected
- * back to your application using the project key and callback function name
+ * back to your application using the script ID and callback function name
  * specified, so that the flow may continue.
  * @returns {string} The authorization URL for a new token.
  */
@@ -359,7 +359,7 @@ Service_.prototype.authorize = function() {
     oauth_token: token.public
   };
   if (this.oauthVersion_ == '1.0') {
-    oauthParams.oauth_callback = this.getCallbackUrl_();
+    oauthParams.oauth_callback = this.getCallbackUrl();
   }
   return buildUrl_(this.authorizationUrl_, oauthParams);
 };
@@ -446,7 +446,7 @@ Service_.prototype.getRequestToken_ = function() {
   };
   var oauthParams = {};
   if (this.oauthVersion_ == '1.0a') {
-    oauthParams.oauth_callback = this.getCallbackUrl_();
+    oauthParams.oauth_callback = this.getCallbackUrl();
   }
 
   var response = this.fetchInternal_(url, params, null, oauthParams);
@@ -637,20 +637,19 @@ Service_.prototype.getPropertyKey_ = function() {
 /**
  * Gets a callback URL to use for the OAuth flow.
  * @return {string} A callback URL.
- * @private
  */
-Service_.prototype.getCallbackUrl_ = function() {
+Service_.prototype.getCallbackUrl = function() {
   validate_({
     'Callback Function Name': this.callbackFunctionName_,
     'Service Name': this.serviceName_,
-    'Project Key': this.projectKey_
+    'Script ID': this.scriptId_
   });
   var stateToken = eval('Script' + 'App').newStateToken()
       .withMethod(this.callbackFunctionName_)
       .withArgument('serviceName', this.serviceName_)
       .withTimeout(3600)
       .createToken();
-  return buildUrl_(getCallbackUrl(this.projectKey_), {
+  return buildUrl_(getCallbackUrl(this.scriptId_), {
     state: stateToken
   });
 };
