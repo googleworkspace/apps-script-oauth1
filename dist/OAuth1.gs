@@ -114,7 +114,8 @@ function getCallbackUrl(scriptId) {
 if (module) {
   module.exports = {
     createService: createService,
-    getCallbackUrl: getCallbackUrl
+    getCallbackUrl: getCallbackUrl,
+    MemoryProperties: MemoryProperties
   };
 }
 

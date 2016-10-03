@@ -44,7 +44,7 @@ function getCallbackUrl(scriptId) {
     'https://script.google.com/macros/d/%s/usercallback', scriptId);
 }
 
-if (module) {
+if (typeof module != 'undefined') {
   module.exports = {
     createService: createService,
     getCallbackUrl: getCallbackUrl,
