@@ -1,3 +1,123 @@
+(function (host, expose) {
+   var module = { exports: {} };
+   var exports = module.exports;
+   /****** code begin *********/
+/**
+ * Creates a new MemoryProperties, an implementation of the Properties
+ * interface that stores values in memory.
+ * @constructor
+ */
+var MemoryProperties = function() {
+  this.properties = {};
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#deleteallproperties}
+ */
+MemoryProperties.prototype.deleteAllProperties = function() {
+  this.properties = {};
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#deletepropertykey}
+ */
+MemoryProperties.prototype.deleteProperty = function(key) {
+  delete this.properties[key];
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getkeys}
+ */
+MemoryProperties.prototype.getKeys = function() {
+  return Object.keys(this.properties);
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperties}
+ */
+MemoryProperties.prototype.getProperties = function() {
+  return _.clone(this.properties);
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperty}
+ */
+MemoryProperties.prototype.getProperty = function(key) {
+  return this.properties[key];
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#setpropertiesproperties-deleteallothers}
+ */
+MemoryProperties.prototype.setProperties = function(properties, opt_deleteAllOthers) {
+  if (opt_deleteAllOthers) {
+    this.deleteAllProperties();
+  }
+  Object.keys(properties).forEach(function(key) {
+    this.setProperty(key, properties[key]);
+  });
+};
+
+/**
+ * @see {@link https://developers.google.com/apps-script/reference/properties/properties#setpropertykey-value}
+ */
+MemoryProperties.prototype.setProperty = function(key, value) {
+  this.properties[key] = String(value);
+};
+
+// Copyright 2015 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * @fileoverview Contains the methods exposed by the library, and performs any
+ * required setup.
+ */
+
+// Load the Underscore.js library. This library was added using the project
+// key "MGwgKN2Th03tJ5OdmlzB8KPxhMjh3Sh48".
+
+
+/**
+ * Creates a new OAuth1 service with the name specified. It's usually best to
+ * create and configure your service once at the start of your script, and then
+ * reference it during the different phases of the authorization flow.
+ * @param {string} serviceName The name of the service.
+ * @return {Service_} The service object.
+ */
+function createService(serviceName) {
+  return new Service_(serviceName);
+}
+
+/**
+ * Returns the callback URL that will be used for a given script. Often this URL
+ * needs to be entered into a configuration screen of your OAuth provider.
+ * @param {string} projectKey The project key of your script, which can be found
+ *     in the Script Editor UI under "File > Project properties".
+ * @return {string} The callback URL.
+ */
+function getCallbackUrl(projectKey) {
+  return Utilities.formatString(
+    'https://script.google.com/macros/d/%s/usercallback', projectKey);
+}
+
+if (module) {
+  module.exports = {
+    createService: createService,
+    getCallbackUrl: getCallbackUrl
+  };
+}
+
 // Copyright 2015 Google Inc. All Rights Reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -534,3 +654,421 @@ Service_.prototype.getCallbackUrl_ = function() {
     state: stateToken
   });
 };
+
+// The MIT License (MIT)
+//
+// Copyright (c) 2014 Ddo
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy of
+// this software and associated documentation files (the "Software"), to deal in
+// the Software without restriction, including without limitation the rights to
+// use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+// the Software, and to permit persons to whom the Software is furnished to do so,
+// subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+// FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+// COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+// IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+// CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+/**
+ * A modified version of the oauth-1.0a javascript library:
+ * https://github.com/ddo/oauth-1.0a
+ * The cryptojs dependency was removed in favor of native Apps Script functions.
+ * A new parameter was added to authorize() for additional oauth params.
+ */
+
+(function(global) {
+  /**
+  * Constructor
+  * @param {Object} opts consumer key and secret
+  */
+  function OAuth(opts) {
+    if(!(this instanceof OAuth)) {
+      return new OAuth(opts);
+    }
+
+    if(!opts) {
+      opts = {};
+    }
+
+    if(!opts.consumer) {
+      throw new Error('consumer option is required');
+    }
+
+    this.consumer            = opts.consumer;
+    this.signature_method    = opts.signature_method || 'HMAC-SHA1';
+    this.nonce_length        = opts.nonce_length || 32;
+    this.version             = opts.version || '1.0';
+    this.parameter_seperator = opts.parameter_seperator || ', ';
+
+    if(typeof opts.last_ampersand === 'undefined') {
+      this.last_ampersand = true;
+    } else {
+      this.last_ampersand = opts.last_ampersand;
+    }
+
+    switch (this.signature_method) {
+      case 'HMAC-SHA1':
+        this.hash = function(base_string, key) {
+          var sig = Utilities.computeHmacSignature(Utilities.MacAlgorithm.HMAC_SHA_1, base_string, key);
+          return Utilities.base64Encode(sig);
+        };
+        break;
+      case 'PLAINTEXT':
+        this.hash = function(base_string, key) {
+          return key;
+        };
+        break;
+      case 'RSA-SHA1':
+        throw new Error('oauth-1.0a does not support this signature method right now. Coming Soon...');
+      default:
+        throw new Error('The OAuth 1.0a protocol defines three signature methods: HMAC-SHA1, RSA-SHA1, and PLAINTEXT only');
+    }
+  }
+
+  /**
+  * OAuth request authorize
+  * @param  {Object} request data
+  * {
+  *     method,
+  *     url,
+  *     data
+  * }
+  * @param  {Object} public and secret token
+  * @return {Object} OAuth Authorized data
+  */
+  OAuth.prototype.authorize = function(request, token, opt_oauth_data) {
+    var oauth_data = {
+      oauth_consumer_key: this.consumer.public,
+      oauth_nonce: this.getNonce(),
+      oauth_signature_method: this.signature_method,
+      oauth_timestamp: this.getTimeStamp(),
+      oauth_version: this.version
+    };
+
+    if (opt_oauth_data) {
+      oauth_data = this.mergeObject(oauth_data, opt_oauth_data);
+    }
+
+    if(!token) {
+      token = {};
+    }
+
+    if(token.public) {
+      oauth_data.oauth_token = token.public;
+    }
+
+    if(!request.data) {
+      request.data = {};
+    }
+
+    oauth_data.oauth_signature = this.getSignature(request, token.secret, oauth_data);
+
+    return oauth_data;
+  };
+
+  /**
+  * Create a OAuth Signature
+  * @param  {Object} request data
+  * @param  {Object} token_secret public and secret token
+  * @param  {Object} oauth_data   OAuth data
+  * @return {String} Signature
+  */
+  OAuth.prototype.getSignature = function(request, token_secret, oauth_data) {
+    return this.hash(this.getBaseString(request, oauth_data), this.getSigningKey(token_secret));
+  };
+
+  /**
+  * Base String = Method + Base Url + ParameterString
+  * @param  {Object} request data
+  * @param  {Object} OAuth data
+  * @return {String} Base String
+  */
+  OAuth.prototype.getBaseString = function(request, oauth_data) {
+    return request.method.toUpperCase() + '&' + this.percentEncode(this.getBaseUrl(request.url)) + '&' + this.percentEncode(this.getParameterString(request, oauth_data));
+  };
+
+  /**
+  * Get data from url
+  * -> merge with oauth data
+  * -> percent encode key & value
+  * -> sort
+  *
+  * @param  {Object} request data
+  * @param  {Object} OAuth data
+  * @return {Object} Parameter string data
+  */
+  OAuth.prototype.getParameterString = function(request, oauth_data) {
+    var base_string_data = this.sortObject(this.percentEncodeData(this.mergeObject(oauth_data, this.mergeObject(request.data, this.deParamUrl(request.url)))));
+
+    var data_str = '';
+
+    //base_string_data to string
+    for(var key in base_string_data) {
+      data_str += key + '=' + base_string_data[key] + '&';
+    }
+
+    //remove the last character
+    data_str = data_str.substr(0, data_str.length - 1);
+    return data_str;
+  };
+
+  /**
+  * Create a Signing Key
+  * @param  {String} token_secret Secret Token
+  * @return {String} Signing Key
+  */
+  OAuth.prototype.getSigningKey = function(token_secret) {
+    token_secret = token_secret || '';
+
+    if(!this.last_ampersand && !token_secret) {
+      return this.percentEncode(this.consumer.secret);
+    }
+
+    return this.percentEncode(this.consumer.secret) + '&' + this.percentEncode(token_secret);
+  };
+
+  /**
+  * Get base url
+  * @param  {String} url
+  * @return {String}
+  */
+  OAuth.prototype.getBaseUrl = function(url) {
+    return url.split('?')[0];
+  };
+
+  /**
+  * Get data from String
+  * @param  {String} string
+  * @return {Object}
+  */
+  OAuth.prototype.deParam = function(string) {
+    var arr = decodeURIComponent(string)
+        .replace(/\+/g, ' ')
+        .split('&');
+    var data = {};
+
+    for(var i = 0; i < arr.length; i++) {
+      var item = arr[i].split('=');
+      data[item[0]] = item[1];
+    }
+    return data;
+  };
+
+  /**
+  * Get data from url
+  * @param  {String} url
+  * @return {Object}
+  */
+  OAuth.prototype.deParamUrl = function(url) {
+    var tmp = url.split('?');
+
+    if (tmp.length === 1)
+      return {};
+
+    return this.deParam(tmp[1]);
+  };
+
+  /**
+  * Percent Encode
+  * @param  {String} str
+  * @return {String} percent encoded string
+  */
+  OAuth.prototype.percentEncode = function(str) {
+    return encodeURIComponent(str)
+    .replace(/\!/g, "%21")
+    .replace(/\*/g, "%2A")
+    .replace(/\'/g, "%27")
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29");
+  };
+
+  /**
+  * Percent Encode Object
+  * @param  {Object} data
+  * @return {Object} percent encoded data
+  */
+  OAuth.prototype.percentEncodeData = function(data) {
+    var result = {};
+
+    for(var key in data) {
+      result[this.percentEncode(key)] = this.percentEncode(data[key]);
+    }
+
+    return result;
+  };
+
+  /**
+  * Get OAuth data as Header
+  * @param  {Object} oauth_data
+  * @return {String} Header data key - value
+  */
+  OAuth.prototype.toHeader = function(oauth_data) {
+    oauth_data = this.sortObject(oauth_data);
+
+    var header_value = 'OAuth ';
+
+    for(var key in oauth_data) {
+      if (key.indexOf('oauth_') === -1)
+        continue;
+      header_value += this.percentEncode(key) + '="' + this.percentEncode(oauth_data[key]) + '"' + this.parameter_seperator;
+    }
+
+    return {
+      Authorization: header_value.substr(0, header_value.length - this.parameter_seperator.length) //cut the last chars
+    };
+  };
+
+  /**
+  * Create a random word characters string with input length
+  * @return {String} a random word characters string
+  */
+  OAuth.prototype.getNonce = function() {
+    var word_characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    var result = '';
+
+    for(var i = 0; i < this.nonce_length; i++) {
+      result += word_characters[parseInt(Math.random() * word_characters.length, 10)];
+    }
+
+    return result;
+  };
+
+  /**
+  * Get Current Unix TimeStamp
+  * @return {Int} current unix timestamp
+  */
+  OAuth.prototype.getTimeStamp = function() {
+    return parseInt(new Date().getTime()/1000, 10);
+  };
+
+  ////////////////////// HELPER FUNCTIONS //////////////////////
+
+  /**
+  * Merge object
+  * @param  {Object} obj1
+  * @param  {Object} obj2
+  * @return {Object}
+  */
+  OAuth.prototype.mergeObject = function(obj1, obj2) {
+    var merged_obj = obj1;
+    for(var key in obj2) {
+      merged_obj[key] = obj2[key];
+    }
+    return merged_obj;
+  };
+
+  /**
+  * Sort object by key
+  * @param  {Object} data
+  * @return {Object} sorted object
+  */
+  OAuth.prototype.sortObject = function(data) {
+    var keys = Object.keys(data);
+    var result = {};
+
+    keys.sort();
+
+    for(var i = 0; i < keys.length; i++) {
+      var key = keys[i];
+      result[key] = data[key];
+    }
+
+    return result;
+  };
+
+  global.Signer = OAuth;
+})(this);
+
+// Copyright 2015 Google Inc. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+/**
+ * @fileoverview Contains utility methods used by the library.
+ */
+
+/**
+ * Builds a complete URL from a base URL and a map of URL parameters.
+ * @param {string} url The base URL.
+ * @param {Object.<string, string>} params The URL parameters and values.
+ * @returns {string} The complete URL.
+ * @private
+ */
+function buildUrl_(url, params) {
+  var paramString = Object.keys(params).map(function(key) {
+    return encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+  }).join('&');
+  return url + (url.indexOf('?') >= 0 ? '&' : '?') + paramString;
+}
+
+/**
+ * Validates that all of the values in the object are non-empty. If an empty
+ * value is found, an error is thrown using the key as the name.
+ * @param {Object.<string, string>} params The values to validate.
+ * @private
+ */
+function validate_(params) {
+  Object.keys(params).forEach(function(name) {
+    var value = params[name];
+    if (isEmpty_(value)) {
+      throw Utilities.formatString('%s is required.', name);
+    }
+  });
+}
+
+/**
+ * Returns true if the given value is empty, false otherwise. An empty value
+ * is one of null, undefined, a zero-length string, a zero-length array or an
+ * object with no keys.
+ * @param {?} value The value to test.
+ * @returns {boolean} True if the value is empty, false otherwise.
+ * @private
+ */
+function isEmpty_(value) {
+  return value === null || value === undefined ||
+      ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
+}
+
+/**
+ * Gets the time in seconds, rounded down to the nearest second.
+ * @param {Date} date The Date object to convert.
+ * @returns {Number} The number of seconds since the epoch.
+ * @private
+ */
+function getTimeInSeconds_(date) {
+  return Math.floor(date.getTime() / 1000);
+}
+
+   /****** code end *********/
+   ;(
+function copy(src, target, obj) {
+    obj[target] = obj[target] || {};
+    if (src && typeof src === 'object') {
+        for (var k in src) {
+            if (src.hasOwnProperty(k)) {
+                obj[target][k] = src[k];
+            }
+        }
+    } else {
+        obj[target] = src;
+    }
+}
+   ).call(null, module.exports, expose, host);
+}).call(this, this, "OAuth1");

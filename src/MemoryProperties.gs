@@ -26,21 +26,21 @@ MemoryProperties.prototype.deleteProperty = function(key) {
  */
 MemoryProperties.prototype.getKeys = function() {
   return Object.keys(this.properties);
-}
+};
 
 /**
  * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperties}
  */
 MemoryProperties.prototype.getProperties = function() {
   return _.clone(this.properties);
-}
+};
 
 /**
  * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperty}
  */
 MemoryProperties.prototype.getProperty = function(key) {
   return this.properties[key];
-}
+};
 
 /**
  * @see {@link https://developers.google.com/apps-script/reference/properties/properties#setpropertiesproperties-deleteallothers}

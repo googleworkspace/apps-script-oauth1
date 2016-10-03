@@ -1,0 +1,36 @@
+{
+  "name": "apps-script-oauth1",
+  "version": "1.12.0",
+  "description": "OAuth1 for Apps Script is a library for Google Apps Script that provides the ability to create and authorize OAuth1 tokens. ",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/googlesamples/apps-script-oauth1.git"
+  },
+  "author": "Eric Koleda <ekoleda+devrel@googlers.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/googlesamples/apps-script-oauth1/issues"
+  },
+  "homepage": "https://github.com/googlesamples/apps-script-oauth1",
+  "devDependencies": {
+    "del": "^1.2.1",
+    "gulp": "^3.9.0",
+    "gulp-bump": "^0.3.1",
+    "gulp-clean": "^0.3.1",
+    "gulp-concat": "^2.6.0",
+    "gulp-expose": "0.0.7",
+    "gulp-if": "^1.2.5",
+    "gulp-jshint": "^1.12.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-strip-line": "0.0.1",
+    "jshint-stylish": "^2.0.1"
+  },
+  "dependencies": {
+    "underscore": "^1.8.3"
+  },
+  "scripts": {
+    "postversion": "gulp dist",
+    "dist": "gulp dist",
+    "lint": "gulp lint"
+  }
+}

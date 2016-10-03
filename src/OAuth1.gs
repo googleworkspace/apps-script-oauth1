@@ -43,3 +43,10 @@ function getCallbackUrl(projectKey) {
   return Utilities.formatString(
     'https://script.google.com/macros/d/%s/usercallback', projectKey);
 }
+
+if (module) {
+  module.exports = {
+    createService: createService,
+    getCallbackUrl: getCallbackUrl
+  };
+}
