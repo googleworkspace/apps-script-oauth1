@@ -2,7 +2,7 @@
  * This script must be published as a web app (Publish > Deploy as web app) in 
  * order to function. The web app URL is used instead of the normal callback
  * URL to work around a bug in the Goodreads API's OAuth implementation
-* (https://goo.gl/cRfdph).
+ * (https://goo.gl/cRfdph).
  */ 
 
 var CONSUMER_KEY = '...';
