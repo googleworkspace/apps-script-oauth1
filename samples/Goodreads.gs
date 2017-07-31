@@ -9,7 +9,7 @@ var CONSUMER_KEY = '...';
 var CONSUMER_SECRET = '...';
 
 /**
- * Authorizes and makes a request to the Twitter API.
+ * Authorizes and makes a request to the Goodreads API.
  */
 function run() {
   var service = getService();
