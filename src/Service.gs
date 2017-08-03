@@ -450,15 +450,15 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
  * @private
  */
 Service_.prototype.parseToken_ = function(content) {
-  var fields = content.split('&').reduce(function(result, pair) {
+  var token = content.split('&').reduce(function(result, pair) {
     var parts = pair.split('=');
     result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
     return result;
   }, {});
-  return {
-    public: fields.oauth_token,
-    secret: fields.oauth_token_secret
-  };
+  // Set fields that the signing library expects.
+  token.public = token.oauth_token;
+  token.secret = token.oauth_token_secret;
+  return token;
 };
 
 /**
