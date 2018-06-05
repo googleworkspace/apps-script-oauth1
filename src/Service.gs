@@ -256,7 +256,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   var verifier = callbackRequest.parameter.oauth_verifier;
   var token = this.getToken_();
 
-  if (requestToken && requestToken != token.public) {
+  if (!token || (requestToken && requestToken != token.public)) {
     throw 'Error handling callback: token mismatch';
   }
 
