@@ -157,6 +157,34 @@ differences in how they implement the standard it may be that some APIs
 aren't compatible. If you find an API that it does't work with, open an issue or
 fix the problem yourself and make a pull request against the source code.
 
+### 3-legged OAuth
+
+This library was primarily designed to support the
+[3-legged OAuth flow](http://oauthbible.com/#oauth-10a-three-legged), where
+the end-user visits a web page to grant authorization to your application. The
+"Usage" section above describes how to configure the library for this flow.
+
+### 2-legged OAuth
+
+This library does not currently support the
+[2-legged OAuth flow](http://oauthbible.com/#oauth-10a-two-legged), where
+tokens are generated but the user is not prompted to authorize access.
+
+Be aware that many OAuth providers incorrectly use the term "2-legged" when
+describing their OAuth flow, when in reality they are using the 1-legged flow,
+which this library does support.
+
+### 1-legged OAuth
+
+This library supports the
+[1-legged OAuth flow](http://oauthbible.com/#oauth-10a-one-legged), where the
+consumer key and secret are simply used to sign requests to the API endpoints,
+without the creation or exchanging of tokens. To use this flow, setup the
+service with a consumer key and secret (and optionally a token and token secret)
+and use it to call the API endpoint. See the
+[Semantics3 sample](samples/Semantics3.gs) and [Yelp sample](samples/Yelp.gs)
+for some example usage.
+
 ## Other features
 
 #### Resetting the access token

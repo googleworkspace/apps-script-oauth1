@@ -104,7 +104,7 @@ Service_.prototype.setMethod = function(method) {
 /**
  * Sets the OAuth signature method to use. 'HMAC-SHA1' is the default.
  * @param {string} signatureMethod The OAuth signature method. Allowed values
- *     are 'HMAC-SHA1' and 'PLAINTEXT'.
+ *     are 'HMAC-SHA1', 'RSA-SHA1' and 'PLAINTEXT'.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setSignatureMethod = function(signatureMethod) {

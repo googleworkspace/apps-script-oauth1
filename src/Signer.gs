@@ -69,7 +69,11 @@
         };
         break;
       case 'RSA-SHA1':
-        throw new Error('oauth-1.0a does not support this signature method right now. Coming Soon...');
+        this.hash = function(base_string, key) {
+          var sig = Utilities.computeRsaSignature(Utilities.RsaAlgorithm.RSA_SHA_1, base_string, key);
+          return Utilities.base64Encode(sig);
+        }
+        break;
       default:
         throw new Error('The OAuth 1.0a protocol defines three signature methods: HMAC-SHA1, RSA-SHA1, and PLAINTEXT only');
     }
@@ -169,6 +173,13 @@
   */
   OAuth.prototype.getSigningKey = function(token_secret) {
     token_secret = token_secret || '';
+
+    // Don't percent encode the signing key (PKCS#8 PEM private key) when using
+    // the RSA-SHA1 method. The token secret is never used with the RSA-SHA1
+    // method.
+    if (this.signature_method === 'RSA-SHA1') {
+      return this.consumer.secret;
+    }
 
     if(!this.last_ampersand && !token_secret) {
       return this.percentEncode(this.consumer.secret);
