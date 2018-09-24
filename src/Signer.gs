@@ -72,7 +72,7 @@
         this.hash = function(base_string, key) {
           var sig = Utilities.computeRsaSignature(Utilities.RsaAlgorithm.RSA_SHA_1, base_string, key);
           return Utilities.base64Encode(sig);
-        }
+        };
         break;
       default:
         throw new Error('The OAuth 1.0a protocol defines three signature methods: HMAC-SHA1, RSA-SHA1, and PLAINTEXT only');
