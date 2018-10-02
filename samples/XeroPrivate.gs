@@ -1,5 +1,5 @@
 /**
- * This sample demonstrates how to configure the library for the Xero API, when
+ * This sample demonstrates how to configure the library for the Xero API when
  * using a private application. Although the Xero documentation calls it a
  * "2 legged" flow it is really a 1-legged flow. Public Xero applications use
  * a 3-legged flow not shown here.
