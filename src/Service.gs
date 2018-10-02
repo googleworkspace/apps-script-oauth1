@@ -455,6 +455,10 @@ Service_.prototype.parseToken_ = function(content) {
     result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
     return result;
   }, {});
+  // Verify that the response contains a token.
+  if (!token.oauth_token) {
+    throw 'Error parsing token: key "oauth_token" not found';
+  }
   // Set fields that the signing library expects.
   token.public = token.oauth_token;
   token.secret = token.oauth_token_secret;
