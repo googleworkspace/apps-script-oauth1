@@ -102,6 +102,16 @@ Service_.prototype.setMethod = function(method) {
 };
 
 /**
+ * Sets the OAuth realm parameter to be used with this service (optional).
+ * @param {string} realm The realm to be used with this service.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setRealm = function(realm) {
+  this.realm_ = realm;
+  return this;
+};
+
+/**
  * Sets the OAuth signature method to use. 'HMAC-SHA1' is the default.
  * @param {string} signatureMethod The OAuth signature method. Allowed values
  *     are 'HMAC-SHA1', 'RSA-SHA1' and 'PLAINTEXT'.
@@ -415,6 +425,9 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     request.data = data;
   }
   oauthParams = signer.authorize(request, token, oauthParams);
+  if (this.realm_ != null) {
+    oauthParams.realm = this.realm_;
+  }
   switch (this.paramLocation_) {
     case 'auth-header':
       params.headers = _.extend({}, params.headers,

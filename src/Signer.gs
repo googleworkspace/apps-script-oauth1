@@ -267,7 +267,7 @@
     var header_value = 'OAuth ';
 
     for(var key in oauth_data) {
-      if (key.indexOf('oauth_') === -1)
+      if (key !== 'realm' && key.indexOf('oauth_') === -1)
         continue;
       header_value += this.percentEncode(key) + '="' + this.percentEncode(oauth_data[key]) + '"' + this.parameter_seperator;
     }
