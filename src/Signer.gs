@@ -24,6 +24,7 @@
  * https://github.com/ddo/oauth-1.0a
  * The cryptojs dependency was removed in favor of native Apps Script functions.
  * A new parameter was added to authorize() for additional oauth params.
+ * Support for realm authorization parameter was added in toHeader().
  */
 
 (function(global) {
