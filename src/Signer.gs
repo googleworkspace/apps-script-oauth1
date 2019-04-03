@@ -24,6 +24,7 @@
  * https://github.com/ddo/oauth-1.0a
  * The cryptojs dependency was removed in favor of native Apps Script functions.
  * A new parameter was added to authorize() for additional oauth params.
+ * Support for realm authorization parameter was added in toHeader().
  */
 
 (function(global) {
@@ -267,7 +268,7 @@
     var header_value = 'OAuth ';
 
     for(var key in oauth_data) {
-      if (key.indexOf('oauth_') === -1)
+      if (key !== 'realm' && key.indexOf('oauth_') === -1)
         continue;
       header_value += this.percentEncode(key) + '="' + this.percentEncode(oauth_data[key]) + '"' + this.parameter_seperator;
     }
