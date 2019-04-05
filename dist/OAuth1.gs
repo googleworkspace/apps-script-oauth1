@@ -223,9 +223,19 @@ Service_.prototype.setMethod = function(method) {
 };
 
 /**
+ * Sets the OAuth realm parameter to be used with this service (optional).
+ * @param {string} realm The realm to be used with this service.
+ * @return {Service_} This service, for chaining.
+ */
+Service_.prototype.setRealm = function(realm) {
+  this.realm_ = realm;
+  return this;
+};
+
+/**
  * Sets the OAuth signature method to use. 'HMAC-SHA1' is the default.
  * @param {string} signatureMethod The OAuth signature method. Allowed values
- *     are 'HMAC-SHA1' and 'PLAINTEXT'.
+ *     are 'HMAC-SHA1', 'RSA-SHA1' and 'PLAINTEXT'.
  * @return {Service_} This service, for chaining.
  */
 Service_.prototype.setSignatureMethod = function(signatureMethod) {
@@ -377,7 +387,7 @@ Service_.prototype.handleCallback = function(callbackRequest) {
   var verifier = callbackRequest.parameter.oauth_verifier;
   var token = this.getToken_();
 
-  if (requestToken && requestToken != token.public) {
+  if (!token || (requestToken && requestToken != token.public)) {
     throw 'Error handling callback: token mismatch';
   }
 
@@ -536,6 +546,9 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
     request.data = data;
   }
   oauthParams = signer.authorize(request, token, oauthParams);
+  if (this.realm_ != null) {
+    oauthParams.realm = this.realm_;
+  }
   switch (this.paramLocation_) {
     case 'auth-header':
       params.headers = _.extend({}, params.headers,
@@ -576,6 +589,10 @@ Service_.prototype.parseToken_ = function(content) {
     result[decodeURIComponent(parts[0])] = decodeURIComponent(parts[1]);
     return result;
   }, {});
+  // Verify that the response contains a token.
+  if (!token.oauth_token) {
+    throw 'Error parsing token: key "oauth_token" not found';
+  }
   // Set fields that the signing library expects.
   token.public = token.oauth_token;
   token.secret = token.oauth_token_secret;
@@ -681,6 +698,7 @@ Service_.prototype.getCallbackUrl = function() {
  * https://github.com/ddo/oauth-1.0a
  * The cryptojs dependency was removed in favor of native Apps Script functions.
  * A new parameter was added to authorize() for additional oauth params.
+ * Support for realm authorization parameter was added in toHeader().
  */
 
 (function(global) {
@@ -726,7 +744,11 @@ Service_.prototype.getCallbackUrl = function() {
         };
         break;
       case 'RSA-SHA1':
-        throw new Error('oauth-1.0a does not support this signature method right now. Coming Soon...');
+        this.hash = function(base_string, key) {
+          var sig = Utilities.computeRsaSignature(Utilities.RsaAlgorithm.RSA_SHA_1, base_string, key);
+          return Utilities.base64Encode(sig);
+        };
+        break;
       default:
         throw new Error('The OAuth 1.0a protocol defines three signature methods: HMAC-SHA1, RSA-SHA1, and PLAINTEXT only');
     }
@@ -827,6 +849,13 @@ Service_.prototype.getCallbackUrl = function() {
   OAuth.prototype.getSigningKey = function(token_secret) {
     token_secret = token_secret || '';
 
+    // Don't percent encode the signing key (PKCS#8 PEM private key) when using
+    // the RSA-SHA1 method. The token secret is never used with the RSA-SHA1
+    // method.
+    if (this.signature_method === 'RSA-SHA1') {
+      return this.consumer.secret;
+    }
+
     if(!this.last_ampersand && !token_secret) {
       return this.percentEncode(this.consumer.secret);
     }
@@ -913,7 +942,7 @@ Service_.prototype.getCallbackUrl = function() {
     var header_value = 'OAuth ';
 
     for(var key in oauth_data) {
-      if (key.indexOf('oauth_') === -1)
+      if (key !== 'realm' && key.indexOf('oauth_') === -1)
         continue;
       header_value += this.percentEncode(key) + '="' + this.percentEncode(oauth_data[key]) + '"' + this.parameter_seperator;
     }
