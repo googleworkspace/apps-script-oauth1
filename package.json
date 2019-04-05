@@ -1,6 +1,6 @@
 {
   "name": "apps-script-oauth1",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "description": "OAuth1 for Apps Script is a library for Google Apps Script that provides the ability to create and authorize OAuth1 tokens. ",
   "repository": {
     "type": "git",
