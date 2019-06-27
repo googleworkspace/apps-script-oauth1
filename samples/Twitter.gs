@@ -49,6 +49,10 @@ function getService() {
       // Set the name of the callback function in the script referenced
       // above that should be invoked to complete the OAuth flow.
       .setCallbackFunction('authCallback')
+  
+      // Using a cache will reduce the need to read from 
+      // the property store and may increase performance.
+      .setCache(CacheService.getUserCache())
 
       // Set the property store where authorized tokens should be persisted.
       .setPropertyStore(PropertiesService.getUserProperties());
