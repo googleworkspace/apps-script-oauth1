@@ -17,10 +17,6 @@
  * required setup.
  */
 
-// Load the Underscore.js library. This library was added using the script ID
-// "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
-var _ = Underscore.load();
-
 /**
  * Creates a new OAuth1 service with the name specified. It's usually best to
  * create and configure your service once at the start of your script, and then

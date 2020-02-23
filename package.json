@@ -25,9 +25,6 @@
     "gulp-strip-line": "0.0.1",
     "jshint-stylish": "^2.0.1"
   },
-  "dependencies": {
-    "underscore": "^1.8.3"
-  },
   "scripts": {
     "postversion": "gulp dist",
     "dist": "gulp dist",

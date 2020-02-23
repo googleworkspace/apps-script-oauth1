@@ -32,30 +32,40 @@ function buildUrl_(url, params) {
 
 /**
  * Validates that all of the values in the object are non-empty. If an empty
- * value is found, an error is thrown using the key as the name.
+ * value is found, and error is thrown using the key as the name.
  * @param {Object.<string, string>} params The values to validate.
  * @private
  */
 function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
-    if (isEmpty_(value)) {
-      throw Utilities.formatString('%s is required.', name);
+    if (!value) {
+      throw new Error(name + ' is required.');
     }
   });
 }
 
 /**
- * Returns true if the given value is empty, false otherwise. An empty value
- * is one of null, undefined, a zero-length string, a zero-length array or an
- * object with no keys.
- * @param {?} value The value to test.
- * @returns {boolean} True if the value is empty, false otherwise.
+ * Copy all of the properties in the source objects over to the
+ * destination object, and return the destination object.
+ * @param {Object} destination The combined object.
+ * @param {Object} source The object who's properties are copied to the
+ *     destination.
+ * @returns {Object} A combined object with the desination and source
+ *     properties.
  * @private
+ * @see http://underscorejs.org/#extend
  */
-function isEmpty_(value) {
-  return value === null || value === undefined ||
-      ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
+function extend_(destination, source) {
+  // Use Object.assign from the v8 engine, if available.
+  if (Object.assign) {
+    return Object.assign(destination, source);
+  }
+  var keys = Object.keys(source);
+  for (var i = 0; i < keys.length; ++i) {
+    destination[keys[i]] = source[keys[i]];
+  }
+  return destination;
 }
 
 /**
