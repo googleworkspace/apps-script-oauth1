@@ -32,7 +32,7 @@ MemoryProperties.prototype.getKeys = function() {
  * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperties}
  */
 MemoryProperties.prototype.getProperties = function() {
-  return _.clone(this.properties);
+  return extend_({}, this.properties);
 };
 
 /**

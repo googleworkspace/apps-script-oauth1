@@ -15,9 +15,6 @@ gulp.task('dist', ['clean'], function() {
       .pipe(concat('OAuth1.gs'))
       .pipe(expose('this', 'OAuth1'))
       .pipe(gulp.dest('dist'));
-  gulp.src('node_modules/underscore/underscore.js')
-      .pipe(rename('Underscore.gs'))
-      .pipe(gulp.dest('dist'));
 });
 
 gulp.task('clean', function() {
