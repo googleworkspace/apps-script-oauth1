@@ -36,7 +36,7 @@ MemoryProperties.prototype.getKeys = function() {
  * @see {@link https://developers.google.com/apps-script/reference/properties/properties#getproperties}
  */
 MemoryProperties.prototype.getProperties = function() {
-  return _.clone(this.properties);
+  return extend_({}, this.properties);
 };
 
 /**
@@ -83,10 +83,6 @@ MemoryProperties.prototype.setProperty = function(key, value) {
  * @fileoverview Contains the methods exposed by the library, and performs any
  * required setup.
  */
-
-// Load the Underscore.js library. This library was added using the script ID
-// "1I21uLOwDKdyF3_W_hvh6WXiIKWJWno8yG9lB8lf1VBnZFQ6jAAhyNTRG".
-
 
 /**
  * Creates a new OAuth1 service with the name specified. It's usually best to
@@ -551,14 +547,15 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
   }
   switch (this.paramLocation_) {
     case 'auth-header':
-      params.headers = _.extend({}, params.headers,
-          signer.toHeader(oauthParams));
+      params.headers =
+          assign_({}, params.headers, signer.toHeader(oauthParams));
       break;
     case 'uri-query':
       url = buildUrl_(url, oauthParams);
       break;
     case 'post-body':
-      params.payload = _.extend({}, params.payload, oauthParams);
+      // Clone the payload.
+      params.payload = assign_({}, params.payload, oauthParams);
       break;
     default:
       throw 'Unknown param location: ' + this.paramLocation_;
@@ -1047,30 +1044,52 @@ function buildUrl_(url, params) {
 
 /**
  * Validates that all of the values in the object are non-empty. If an empty
- * value is found, an error is thrown using the key as the name.
+ * value is found, and error is thrown using the key as the name.
  * @param {Object.<string, string>} params The values to validate.
  * @private
  */
 function validate_(params) {
   Object.keys(params).forEach(function(name) {
     var value = params[name];
-    if (isEmpty_(value)) {
-      throw Utilities.formatString('%s is required.', name);
+    if (!value) {
+      throw new Error(name + ' is required.');
     }
   });
 }
 
 /**
- * Returns true if the given value is empty, false otherwise. An empty value
- * is one of null, undefined, a zero-length string, a zero-length array or an
- * object with no keys.
- * @param {?} value The value to test.
- * @returns {boolean} True if the value is empty, false otherwise.
- * @private
+ * Polyfill for Object.assign, which isn't available on the legacy runtime.
+ * Not assigning to Object to avoid overwriting behavior in the parent
+ * script(s).
+ * @param {Object} target The target object to apply the sources’ properties to,
+ *     which is returned after it is modified.
+ * @param {...Object} sources The source object(s) containing the properties you
+ *     want to apply.
+ * @returns {Object} The target object.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill}
+ * @license Any copyright is dedicated to the Public Domain. http://creativecommons.org/publicdomain/zero/1.0/
  */
-function isEmpty_(value) {
-  return value === null || value === undefined ||
-      ((_.isObject(value) || _.isString(value)) && _.isEmpty(value));
+function assign_(target, varArgs) {
+  if (typeof Object.assign === 'function') {
+    return Object.assign.apply(null, arguments);
+  }
+  if (target === null || target === undefined) {
+    throw new TypeError('Cannot convert undefined or null to object');
+  }
+  var to = Object(target);
+  for (var index = 1; index < arguments.length; index++) {
+    var nextSource = arguments[index];
+
+    if (nextSource !== null && nextSource !== undefined) {
+      for (var nextKey in nextSource) {
+        // Avoid bugs when hasOwnProperty is shadowed
+        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+          to[nextKey] = nextSource[nextKey];
+        }
+      }
+    }
+  }
+  return to;
 }
 
 /**
