@@ -46,26 +46,38 @@ function validate_(params) {
 }
 
 /**
- * Copy all of the properties in the source objects over to the
- * destination object, and return the destination object.
- * @param {Object} destination The combined object.
- * @param {Object} source The object who's properties are copied to the
- *     destination.
- * @returns {Object} A combined object with the desination and source
- *     properties.
- * @private
- * @see http://underscorejs.org/#extend
+ * Polyfill for Object.assign, which isn't available on the legacy runtime.
+ * Not assigning to Object to avoid overwriting behavior in the parent
+ * script(s).
+ * @param {Object} target The target object to apply the sources’ properties to,
+ *     which is returned after it is modified.
+ * @param {...Object} sources The source object(s) containing the properties you
+ *     want to apply.
+ * @returns {Object} The target object.
+ * @see {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#Polyfill}
+ * @license Any copyright is dedicated to the Public Domain. http://creativecommons.org/publicdomain/zero/1.0/
  */
-function extend_(destination, source) {
-  // Use Object.assign from the v8 engine, if available.
-  if (Object.assign) {
-    return Object.assign(destination, source);
+function assign_(target, varArgs) {
+  if (typeof Object.assign === 'function') {
+    return Object.assign.apply(null, arguments);
   }
-  var keys = Object.keys(source);
-  for (var i = 0; i < keys.length; ++i) {
-    destination[keys[i]] = source[keys[i]];
+  if (target === null || target === undefined) {
+    throw new TypeError('Cannot convert undefined or null to object');
   }
-  return destination;
+  var to = Object(target);
+  for (var index = 1; index < arguments.length; index++) {
+    var nextSource = arguments[index];
+
+    if (nextSource !== null && nextSource !== undefined) {
+      for (var nextKey in nextSource) {
+        // Avoid bugs when hasOwnProperty is shadowed
+        if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
+          to[nextKey] = nextSource[nextKey];
+        }
+      }
+    }
+  }
+  return to;
 }
 
 /**

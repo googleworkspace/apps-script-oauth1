@@ -431,14 +431,14 @@ Service_.prototype.fetchInternal_ = function(url, params, opt_token,
   switch (this.paramLocation_) {
     case 'auth-header':
       params.headers =
-        extend_(params.headers || {}, signer.toHeader(oauthParams));
+          assign_({}, params.headers, signer.toHeader(oauthParams));
       break;
     case 'uri-query':
       url = buildUrl_(url, oauthParams);
       break;
     case 'post-body':
-      params.payload =
-        extend_(params.payload || {}, oauthParams);
+      // Clone the payload.
+      params.payload = assign_({}, params.payload, oauthParams);
       break;
     default:
       throw 'Unknown param location: ' + this.paramLocation_;
