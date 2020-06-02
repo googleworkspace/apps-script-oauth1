@@ -1,4 +1,9 @@
 /*
+ * DEPRECATED - Xero has deprecated OAuth1 support. Please use OAuth2 instead.
+ * https://github.com/gsuitedevs/apps-script-oauth2/blob/master/samples/Xero.gs
+ */
+
+/*
  * Xero public applications guide:
  * https://developer.xero.com/documentation/auth-and-limits/public-applications
  *
@@ -66,7 +71,7 @@ function getService() {
   service.getCallbackUrl = function() {
     return ScriptApp.getService().getUrl();
   };
-  
+
   // Override the parseToken_ method to record the time granted.
   var originalParseToken = service.parseToken_;
   service.parseToken_ = function(content) {
@@ -74,13 +79,13 @@ function getService() {
     token.granted_time = Math.floor((new Date()).getTime() / 1000);
     return token;
   }
-  
+
   // Override the hasAccess method to handle token expiration.
   var orginalHasAccess = service.hasAccess;
   service.hasAccess = function() {
     // First do the normal check.
     if (!orginalHasAccess.apply(this)) return false;
-    
+
     // Check to see if the access token has expired
     // (or will expire in the next 60 seconds).
     var token = this.getToken_();
