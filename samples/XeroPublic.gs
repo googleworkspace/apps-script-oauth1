@@ -1,6 +1,6 @@
 /*
  * DEPRECATED - Xero has deprecated OAuth1 support. Please use OAuth2 instead.
- * https://github.com/gsuitedevs/apps-script-oauth2/blob/master/samples/Xero.gs
+ * https://github.com/googleworkspace/apps-script-oauth2/blob/master/samples/Xero.gs
  */
 
 /*
