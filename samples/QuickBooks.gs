@@ -6,7 +6,7 @@ var CONSUMER_SECRET = '...';
  * sandbox company.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var companyId = PropertiesService.getUserProperties()
         .getProperty('QuickBooks.companyId');
@@ -30,14 +30,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('QuickBooks')
       // Set the endpoint URLs.
       .setAccessTokenUrl('https://oauth.intuit.com/oauth/v1/get_access_token')
@@ -60,7 +60,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     PropertiesService.getUserProperties()

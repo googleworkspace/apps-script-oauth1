@@ -51,7 +51,7 @@ exact URL that the service will use when performing the OAuth flow:
  * Logs the callback URL to register.
  */
 function logCallbackUrl() {
-  var service = getService();
+  var service = getService_();
   Logger.log(service.getCallbackUrl());
 }
 ```
@@ -69,7 +69,7 @@ object each time you want to use it. The example below shows how to create a
 service for the Twitter API.
 
 ```js
-function getTwitterService() {
+function getTwitterService_() {
   // Create a new service with the given name. The name will be used when
   // persisting the authorized token, so ensure it is unique within the
   // scope of the property store.
@@ -98,7 +98,7 @@ authorization URL.
 
 ```js
 function showSidebar() {
-  var twitterService = getTwitterService();
+  var twitterService = getTwitterService_();
   if (!twitterService.hasAccess()) {
     var authorizationUrl = twitterService.authorize();
     var template = HtmlService.createTemplate(
@@ -122,7 +122,7 @@ to the user.
 
 ```js
 function authCallback(request) {
-  var twitterService = getTwitterService();
+  var twitterService = getTwitterService_();
   var isAuthorized = twitterService.handleCallback(request);
   if (isAuthorized) {
     return HtmlService.createHtmlOutput('Success! You can close this tab.');
@@ -144,7 +144,7 @@ and automatically signs the requests using the OAuth1 token.
 
 ```js
 function makeRequest() {
-  var twitterService = getTwitterService();
+  var twitterService = getTwitterService_();
   var response = twitterService.fetch('https://api.twitter.com/1.1/statuses/user_timeline.json');
   // ...
 }

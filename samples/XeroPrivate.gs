@@ -19,7 +19,7 @@ var PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
  * Authorizes and makes a request to the Xero API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   var url = 'https://api.xero.com/api.xro/2.0/Organisations';
   var response = service.fetch(url, {
     headers: {
@@ -34,13 +34,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Xero')
       // Set the consumer key and secret.
       .setConsumerKey(CONSUMER_KEY)

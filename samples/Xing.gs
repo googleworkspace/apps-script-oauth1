@@ -5,7 +5,7 @@ var CONSUMER_SECRET = '...';
  * Authorizes and makes a request to the Xing API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://api.xing.com/v1/users/me';
     var response = service.fetch(url);
@@ -22,14 +22,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Xing')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://api.xing.com/v1/request_token')
@@ -52,7 +52,7 @@ function getService() {
  * Handles the OAuth2 callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');
