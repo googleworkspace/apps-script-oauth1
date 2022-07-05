@@ -68,6 +68,10 @@ information is not persisted to any data store, so you'll need to create this
 object each time you want to use it. The example below shows how to create a
 service for the Twitter API.
 
+Ensure the method is private (has an underscore at the end of the name) to
+prevent clients from being able to call the method to read your client ID and
+secret.
+
 ```js
 function getTwitterService_() {
   // Create a new service with the given name. The name will be used when
