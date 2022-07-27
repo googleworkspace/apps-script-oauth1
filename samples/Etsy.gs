@@ -12,7 +12,7 @@ var CONSUMER_SECRET = '...';
  * Authorizes and makes a request to the Etsy API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://openapi.etsy.com/v2/users/__SELF__/profile';
     var response = service.fetch(url);
@@ -32,14 +32,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   var service = OAuth1.createService('Etsy')
       // Set the endpoint URLs.
       // Pass the desired scopes in the request token URL.
@@ -62,7 +62,7 @@ function getService() {
 
   // Override the callback URL method to use the web app URL instead.
   service.getCallbackUrl = function() {
-    return ScriptApp.getService().getUrl();
+    return ScriptApp.getService_().getUrl();
   };
 
   return service;
@@ -74,7 +74,7 @@ function getService() {
 function doGet(request) {
   // Determine if the request is part of an OAuth callback.
   if (request.parameter.oauth_token) {
-    var service = getService();
+    var service = getService_();
     var authorized = service.handleCallback(request);
     if (authorized) {
       return HtmlService.createHtmlOutput('Success!');

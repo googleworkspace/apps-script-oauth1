@@ -12,7 +12,7 @@ var PRIVATE_KEY = '-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
  * Authorizes and makes a request to the Xero API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = SITE + '/rest/api/3/myself';
     var response = service.fetch(url, {
@@ -33,13 +33,13 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  getService().reset();
+  getService_().reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Jira')
       // Set the endpoint URLs.
       .setRequestTokenUrl(SITE + '/plugins/servlet/oauth/request-token')
@@ -68,7 +68,7 @@ function getService() {
  * Handles the OAuth callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

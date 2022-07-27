@@ -5,7 +5,7 @@ var CONSUMER_SECRET = '...';
  * Authorizes and makes a request to the Trello API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   if (service.hasAccess()) {
     var url = 'https://api.trello.com/1/members/me/boards';
     var response = service.fetch(url);
@@ -22,14 +22,14 @@ function run() {
  * Reset the authorization state, so that it can be re-tested.
  */
 function reset() {
-  var service = getService();
+  var service = getService_();
   service.reset();
 }
 
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Trello')
       // Set the endpoint URLs.
       .setRequestTokenUrl('https://trello.com/1/OAuthGetRequestToken')
@@ -52,7 +52,7 @@ function getService() {
  * Handles the OAuth2 callback.
  */
 function authCallback(request) {
-  var service = getService();
+  var service = getService_();
   var authorized = service.handleCallback(request);
   if (authorized) {
     return HtmlService.createHtmlOutput('Success!');

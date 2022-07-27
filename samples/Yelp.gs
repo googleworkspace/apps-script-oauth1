@@ -7,7 +7,7 @@ var TOKEN_SECRET = '...';
  * Authorizes and makes a request to the Yelp API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   var url = 'https://api.yelp.com/v2/search?term=food&location=San+Francisco';
   var response = service.fetch(url);
   var result = JSON.parse(response.getContentText());
@@ -17,7 +17,7 @@ function run() {
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Yelp')
       // Set the consumer key and secret.
       .setConsumerKey(CONSUMER_KEY)

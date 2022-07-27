@@ -5,7 +5,7 @@ var API_SECRET = '...';
  * Authorizes and makes a request to the Semantics3 API.
  */
 function run() {
-  var service = getService();
+  var service = getService_();
   var query = encodeURIComponent(JSON.stringify({
     search: 'iPhone'
   }));
@@ -18,7 +18,7 @@ function run() {
 /**
  * Configures the service.
  */
-function getService() {
+function getService_() {
   return OAuth1.createService('Semantics3')
       // Set the consumer key and secret.
       .setConsumerKey(API_KEY)
