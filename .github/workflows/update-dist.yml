@@ -2,8 +2,7 @@ on: [pull_request]
 name: Update dist folder
 jobs:
   update-dist-src:
-    if: |
-        ${{ contains(github.event.pull_request.labels.*.name, "autorelease: pending") }}
+    if: "${{ contains(github.event.pull_request.labels.*.name, 'autorelease: pending') }}"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
