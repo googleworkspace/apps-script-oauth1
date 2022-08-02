@@ -13,7 +13,7 @@ jobs:
           release-type: node
           package-name: release-please-action
       - uses: actions/checkout@v2
-        if: ${{ steps.release.outputs.pr }}
+        if: ${{ steps.release.outputs.release_created }}
       - uses: actions/setup-node@v1
         if: ${{ steps.release.outputs.release_created }}
         with:
