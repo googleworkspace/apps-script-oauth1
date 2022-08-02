@@ -21,4 +21,4 @@ jobs:
       - uses: actions/checkout@v2
       - run: |
           echo "No tests";
-          exit 1;
+          exit 0;
