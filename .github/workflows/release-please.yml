@@ -1,0 +1,30 @@
+on:
+  push:
+    branches:
+      - main
+name: release-please
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          package-name: release-please-action
+      - uses: actions/checkout@v2
+        if: ${{ steps.release.outputs.pr }}
+      - uses: actions/setup-node@v1
+        if: ${{ steps.release.outputs.release_created }}
+        with:
+          node-version: 16
+      - name: Write test credentials
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          echo "${CLASP_CREDENTIALS}" > "${HOME}/.clasprc.json"
+        env:
+          CLASP_CREDENTIALS: ${{secrets.LIBRARIES_OWNER_CLASP_TOKEN}}
+      - name: Depoy scripts
+        if: ${{ steps.release.outputs.release_created }}
+        run: |
+          npx @google/clasp push
+          npx @google/clasp version
