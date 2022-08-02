@@ -2,11 +2,13 @@ on: [pull_request]
 name: Update dist folder
 jobs:
   update-dist-src:
+    if: contains(github.event.pull_request.labels.*.name, 'autorelease: pending')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
         with:
           ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GOOGLEWORKSPACE_BOT_TOKEN }}
       - uses: actions/setup-node@v1
         with:
           node-version: 16
@@ -22,6 +24,5 @@ jobs:
         run: |
           git config --global user.name 'Google Workspace Bot'
           git config --global user.email 'googleworkspace-bot@google.com'
-          git remote set-url origin https://x-access-token:${{ secrets.GOOGLEWORKSPACE_BOT_TOKEN }}@github.com/${{ github.repository }}
           git commit -am "chore: Update dist/ directory"
           git push
