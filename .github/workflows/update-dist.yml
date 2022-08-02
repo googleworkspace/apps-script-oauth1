@@ -16,9 +16,6 @@ jobs:
         run: npm ci
       - name: Generate dist
         run: npm run dist
-      - name: Check for modified files
-        id: git-check
-        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
       - uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: Update dist/ directory"
