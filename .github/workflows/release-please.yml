@@ -27,4 +27,4 @@ jobs:
         if: ${{ steps.release.outputs.release_created }}
         run: |
           npx @google/clasp push
-          npx @google/clasp version
+          MESSAGE=$(git log -1 --pretty=%B) npx @google/clasp version ${MESSAGE}
