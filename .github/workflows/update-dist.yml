@@ -1,0 +1,29 @@
+on: [pull_request]
+name: Update dist folder
+jobs:
+  update-dist-src:
+    if: |
+        ${{ contains(github.event.pull_request.labels.*.name, "autorelease: pending") }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          token: ${{ secrets.GOOGLEWORKSPACE_BOT_TOKEN }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      - name: Install dependencies
+        run: npm ci
+      - name: Generate dist
+        run: npm run dist
+      - name: Check for modified files
+        id: git-check
+        run: echo ::set-output name=modified::$(if git diff-index --quiet HEAD --; then echo "false"; else echo "true"; fi)
+      - name: Push changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'Google Workspace Bot'
+          git config --global user.email 'googleworkspace-bot@google.com'
+          git commit -am "chore: Update dist/ directory"
+          git push
