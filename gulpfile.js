@@ -1,30 +1,24 @@
-var gulp = require('gulp');
-var concat = require('gulp-concat');
-var expose = require('gulp-expose');
-var stripLine  = require('gulp-strip-line');
-var gulpif = require('gulp-if');
-var del = require('del');
-var rename = require("gulp-rename");
-var jshint = require('gulp-jshint');
-var stylish = require('jshint-stylish');
+import gulp from 'gulp';
+import concat from 'gulp-concat';
+import expose from 'gulp-expose';
+import stripLine from 'gulp-strip-line';
+import gulpif from 'gulp-if';
+import {deleteAsync} from 'del';
+import jshint from 'gulp-jshint';
+import stylish from 'jshint-stylish';
 
-gulp.task('dist', ['clean'], function() {
-  gulp.src('src/*.gs')
+gulp.task('clean', () => deleteAsync(['dist/*']));
+
+gulp.task('lint', () => gulp.src('src/*.gs')
+    .pipe(jshint())
+    .pipe(jshint.reporter(stylish))
+);
+
+gulp.task('dist', gulp.series('clean', 'lint', () => gulp.src('src/*.gs')
       .pipe(gulpif(/OAuth1\.gs$/,
           stripLine('var _ =')))
       .pipe(concat('OAuth1.gs'))
       .pipe(expose('this', 'OAuth1'))
-      .pipe(gulp.dest('dist'));
-});
+      .pipe(gulp.dest('dist'))
+));
 
-gulp.task('clean', function() {
-  del([
-    'dist/*'
-  ]);
-});
-
-gulp.task('lint', function() {
-  return gulp.src('src/*.gs')
-    .pipe(jshint())
-    .pipe(jshint.reporter(stylish));
-});
